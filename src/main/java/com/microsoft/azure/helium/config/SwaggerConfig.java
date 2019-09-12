@@ -5,6 +5,7 @@ import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -27,14 +28,13 @@ public class SwaggerConfig {
             .build()
           .apiInfo(apiInfo());                 
     }
-    
+
+
     private ApiInfo apiInfo() {
-        return new ApiInfo(
-          "Helium", 
-          "A Java reference app for bootstrapping your next Web Apps for Containers service", 
-          "1.0.0", 
-          "Terms of service", 
-          new Contact("John Doe", "www.example.com", "myeaddress@company.com"), 
-          "License of API", "API license URL", Collections.emptyList());
+        return new ApiInfoBuilder()
+                .title("Helium")
+                .description("Java app for bootstrapping your next Web Apps for Containers service using Key Vault and Managed Identities")
+                .version("1.0-SNAPSHOT")
+                .build();
     }
 }

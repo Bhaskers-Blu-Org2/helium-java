@@ -55,12 +55,4 @@ public class ActorsController {
         }
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create actor", notes = "Creates an actor")
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "The created actor") })
-    public ResponseEntity<Actor> createActor(@RequestBody final Actor actor) {
-        Actor savedActor = service.createActor(actor);
-        return new ResponseEntity<>(savedActor, HttpStatus.OK);
-    }
 }

@@ -37,35 +37,4 @@ public class MoviesService {
         }
     }
 
-    public Movie createMovie(Movie movie) {
-        if (movie.equals(null)) {
-            throw new NullPointerException("movie cannot be null");
-        }
-
-        return repository.save(movie);
-    }
-
-    public Movie updateMovie(String movieId, Movie movie) {
-        if (StringUtils.isEmpty(movieId)) {
-            throw new NullPointerException("movieId cannot be empty or null");
-        }
-
-        if (movie.equals(null)) {
-            throw new NullPointerException("movie cannot be null");
-        }
-
-        if (repository.existsById(movieId)) {
-            return repository.save(movie);
-        } else {
-            throw new RuntimeException(String.format("%s does not exist", movieId));
-        }
-    }
-
-    public void deleteMovie(String movieId) {
-        if (StringUtils.isEmpty(movieId)) {
-            throw new NullPointerException("movieId cannot be empty or null");
-        }
-
-        repository.deleteById(movieId);
-    }
 }

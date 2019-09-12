@@ -1,5 +1,6 @@
 package com.microsoft.azure.helium.app.actor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.microsoft.azure.helium.app.Constants;
@@ -33,4 +34,5 @@ public class Actor {
     private int birthYear;
     private List<String> profession;
     private List<Movie> movies;
+
 }

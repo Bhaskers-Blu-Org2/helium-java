@@ -9,7 +9,7 @@ ADD pom.xml $HOME
 FROM base AS dependencies
 RUN mvn verify clean --fail-never
 ADD . $HOME
-RUN mvn package -DskipITs
+RUN mvn package -DskipTests
 
 #
 # ---- Release App ----
@@ -21,6 +21,6 @@ RUN adduser -S appuser
 USER appuser
 COPY --from=dependencies /app/target/helium-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
-CMD ["java", "-jar", "./app/app.jar"]
+CMD ["java", "-jar", "./app.jar"]
 
 

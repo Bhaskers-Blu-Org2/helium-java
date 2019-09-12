@@ -33,6 +33,11 @@
       <version>2.1.6</version>
     </dependency>
     <dependency>
+      <groupId>com.microsoft.azure</groupId>
+      <artifactId>azure-client-authentication</artifactId>
+      <version>1.6.10</version>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>

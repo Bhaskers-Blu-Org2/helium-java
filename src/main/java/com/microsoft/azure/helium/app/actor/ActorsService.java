@@ -36,12 +36,4 @@ public class ActorsService {
             return Optional.of(actors.get(0));
         }
     }
-
-    public Actor createActor(Actor actor) {
-        if (actor.equals(null)) {
-            throw new NullPointerException("actor cannot be null");
-        }
-
-        return repository.save(actor);
-    }
 }

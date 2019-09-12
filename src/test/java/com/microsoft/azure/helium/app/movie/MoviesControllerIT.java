@@ -83,51 +83,5 @@ public class MoviesControllerIT {
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void postMovieEndpointShouldCreateAndReturnValidMovie(){
-        // Arrange
-        Movie expected = MoviesUtils.createMovieWithId(UUID.randomUUID().toString());
 
-        // Act
-        controller.createMovie(expected);
-        Movie actual = repository.findByMovieId(expected.getMovieId()).get(0);
-
-        // Assert
-        assertNotNull(actual);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void putMovieEndpointShouldUpdateAndReturnValidMovie(){
-        // Arrange
-        String movieId = UUID.randomUUID().toString();
-        String movieName = UUID.randomUUID().toString();
-        Movie movie = MoviesUtils.createMovieWithId(movieId);
-        repository.save(movie);
-        Movie expected = MoviesUtils.createMovieWithIdAndName(movieId, movieName);
-        
-        // Act
-        controller.updateMovie(movie.getId(), expected);
-        Movie actual = repository.findByMovieId(expected.getMovieId()).get(0);
-
-        // Assert
-        assertNotNull(actual);
-        assertEquals(expected, actual);
-    }
-    
-    @Test
-    public void deleteMovieEndpointShouldDeleteMovie(){
-        // Arrange
-        Movie movie = MoviesUtils.createMovieWithId(UUID.randomUUID().toString());
-        repository.save(movie);
-        
-        // Act
-        List<Movie> beforeList = repository.findByMovieId(movie.getMovieId());
-        controller.deleteMovie(movie.getMovieId());
-        List<Movie> afterList = repository.findByMovieId(movie.getMovieId());
-
-        // Assert
-        assertFalse(beforeList.isEmpty());
-        assertTrue(afterList.isEmpty());
-    }
 }

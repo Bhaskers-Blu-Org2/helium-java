@@ -98,28 +98,5 @@ public class ActorsControllerTest {
         result.andExpect(status().isNotFound());
         verify(service, times(1)).getActor(any());
     }
-    
-    @Test
-    public void postActorEndpointShouldCreateAndReturnValidActorFromService() throws Exception {
-        // Arrange
-        String id = UUID.randomUUID().toString();
-        Actor expected = ActorsUtils.createActorWithId(id);
-        when(service.createActor(any())).thenReturn(expected);
-
-        // Act
-        ResultActions action = this.mockMvc
-            .perform(
-                post("/api/actors")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(IntegrationTestsUtils.serializeObject(expected)))
-            .andDo(print());
-
-        // Assert
-        action
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.id", is(expected.getId())));
-        verify(service, times(1)).createActor(any());
-    }
 
 }

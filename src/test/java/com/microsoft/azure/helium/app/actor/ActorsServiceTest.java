@@ -113,24 +113,4 @@ public class ActorsServiceTest {
         assertEquals(expected, actual.get());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCreatingActorWithNull() {
-        Actor actor = null;
-        service.createActor(actor);
-    }
-
-    @Test
-    public void shouldReturnActorWhenCreatingActor() throws Exception {
-        // Arrange
-        Actor expected = mock(Actor.class);
-        when(repository.save(expected)).thenReturn(expected);
-
-        // Act
-        Actor actual = service.createActor(expected);
-
-        // Assert
-        verify(repository, times(1)).save(expected);
-        assertNotNull(actual);
-        assertEquals(expected, actual);
-    }
 }

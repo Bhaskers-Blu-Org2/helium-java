@@ -81,17 +81,4 @@ public class ActorsControllerIT {
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void postActorEndpointShouldCreateAndReturnValidActor(){
-        // Arrange
-        Actor expected = ActorsUtils.createActorWithId(UUID.randomUUID().toString());
-
-        // Act
-        controller.createActor(expected).getBody();
-        Actor actual = repository.findByActorId(expected.getActorId()).get(0);
-
-        // Assert
-        assertNotNull(actual);
-        assertEquals(expected, actual);
-    }
 }

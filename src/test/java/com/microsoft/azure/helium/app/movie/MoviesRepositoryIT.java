@@ -43,11 +43,9 @@ public class MoviesRepositoryIT {
         repository.save(expected);
 
         // Act
-        List<Movie> movies = repository.findByMovieId(movieId);
-        Movie actual = movies.get(0);
+        Movie actual = repository.findByMovieId(movieId);
 
         // Assert
-        assertThat(movies, hasSize(1));
         assertNotNull(actual);
         assertEquals(expected.getMovieId(), actual.getMovieId());
     }

@@ -1,5 +1,6 @@
 package com.microsoft.azure.helium.app.genre;
 
+import static com.microsoft.azure.helium.app.genre.GenresUtils.getGenresTestCases;
 import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
@@ -7,9 +8,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.microsoft.azure.helium.Application;
 
+import com.microsoft.azure.helium.app.movie.Movie;
+import com.microsoft.azure.helium.app.movie.MoviesUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,29 +39,22 @@ public class GenresControllerIT {
     @Autowired
     private GenresRepository repository;
 
-    public List<String> getGenresTestCases() {
-        return Arrays.asList("Animation", "Comedy", "Sci-Fi", "Thriller", "Western");
-    }
 
-    @Before
-    public void setupRepositories() {
-        List<String> cases = getGenresTestCases();
-        List<Genre> genres = GenresUtils.getGenresFromStrings(cases);
-        repository.deleteAll();
-        repository.saveAll(genres);
-    }
 
     @Test
-    public void genresEndpointShouldReturnAllGenres() throws Exception {
+    public void genresEndpointShouldReturnAllGenres() {
         // Arrange
-        List<String> cases = getGenresTestCases();
+        List<String> genreList = getGenresTestCases();
+        List<Genre> expected = GenresUtils.getGenresFromStrings(genreList);
+        repository.saveAll(expected);
 
         // Act
-        List<String> genres = controller.getAllGenres().getBody();
+        List<Genre> actual = controller.getAllGenres().getBody();
 
         // Assert
-        assertNotNull(genres);
-        assertThat(genres, hasSize(cases.size()));
-        assertThat(genres, containsInAnyOrder(cases.toArray()));
+        assertNotNull(actual);
+        assertThat(actual, hasSize(expected.size()));
+        assertThat(actual, containsInAnyOrder(expected.toArray()));
     }
+
 }

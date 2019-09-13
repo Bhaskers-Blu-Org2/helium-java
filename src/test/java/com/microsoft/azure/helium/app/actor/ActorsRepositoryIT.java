@@ -43,11 +43,9 @@ public class ActorsRepositoryIT {
         repository.save(expected);
 
         // Act
-        List<Actor> actors = repository.findByActorId(actorId);
-        Actor actual = actors.get(0);
+        Actor actual = repository.findByActorId(actorId);
 
         // Assert
-        assertThat(actors, hasSize(1));
         assertNotNull(actual);
         assertEquals(expected.getActorId(), actual.getActorId());
     }

@@ -46,10 +46,6 @@ public class MoviesControllerIT {
                 .collect(Collectors.toList());
     }
 
-    @Before
-    public void clearRepository(){
-        repository.deleteAll();
-    }
 
     @Test
     public void getMoviesEndpointShouldReturnAllMovies() {

@@ -40,8 +40,10 @@ public class GenresControllerTest {
     @Test
     public void genresEndpointShouldReturnAllGenresFromService() throws Exception {
         // Arrange
-        List<String> genres = Arrays.asList("Animation", "Comedy", "Sci-Fi");
-        when(service.getAllGenres()).thenReturn(genres);
+        List<String> genreList = GenresUtils.getGenresTestCases();
+        List<Genre> expected = GenresUtils.getGenresFromStrings(genreList);
+
+        when(service.getAllGenres()).thenReturn(expected);
 
         // Act
         ResultActions action = this.mockMvc

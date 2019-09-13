@@ -44,10 +44,6 @@ public class ActorsControllerIT {
                 .collect(Collectors.toList());
     }
 
-    @Before
-    public void clearRepository(){
-        repository.deleteAll();
-    }
 
     @Test
     public void getActorsEndpointShouldReturnAllActors() {

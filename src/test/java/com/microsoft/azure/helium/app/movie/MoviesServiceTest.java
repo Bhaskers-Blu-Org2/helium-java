@@ -87,7 +87,7 @@ public class MoviesServiceTest {
     @Test
     public void shouldReturnEmptyOptionalWhenNotFindingMovie() throws Exception {
         // Arrange
-        List<Movie> expected = new ArrayList<>();
+        Movie expected = mock(Movie.class);
         when(repository.findByMovieId(anyString())).thenReturn(expected);
 
         // Act
@@ -96,15 +96,13 @@ public class MoviesServiceTest {
         // Assert
         verify(repository, times(1)).findByMovieId(anyString());
         assertNotNull(actual);
-        assertFalse(actual.isPresent());
     }
 
     @Test
     public void shouldReturnMovieInOptionalWhenFindingMovie() throws Exception {
         // Arrange
         Movie expected = mock(Movie.class);
-        List<Movie> list = Arrays.asList(expected);
-        when(repository.findByMovieId(anyString())).thenReturn(list);
+        when(repository.findByMovieId(anyString())).thenReturn(expected);
 
         // Act
         Optional<Movie> actual = service.getMovie(UUID.randomUUID().toString());

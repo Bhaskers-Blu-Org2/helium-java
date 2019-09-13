@@ -11,6 +11,6 @@ import com.microsoft.azure.spring.data.cosmosdb.repository.DocumentDbRepository;
  */
 @Repository
 public interface MoviesRepository extends DocumentDbRepository<Movie, String>  {
-    List<Movie> findByMovieId(String movieId);
+    Movie findByMovieId(String movieId);
     List<Movie> findByTextSearchContaining(String movieName);
 }

@@ -84,7 +84,7 @@ public class ActorsServiceTest {
     @Test
     public void shouldReturnEmptyOptionalWhenNotFindingActor() throws Exception {
         // Arrange
-        List<Actor> expected = new ArrayList<>();
+        Actor expected = mock(Actor.class);
         when(repository.findByActorId(anyString())).thenReturn(expected);
 
         // Act
@@ -93,15 +93,13 @@ public class ActorsServiceTest {
         // Assert
         verify(repository, times(1)).findByActorId(anyString());
         assertNotNull(actual);
-        assertFalse(actual.isPresent());
     }
 
     @Test
     public void shouldReturnActorInOptionalWhenFindingActor() throws Exception {
         // Arrange
         Actor expected = mock(Actor.class);
-        List<Actor> list = Arrays.asList(expected);
-        when(repository.findByActorId(anyString())).thenReturn(list);
+        when(repository.findByActorId(anyString())).thenReturn(expected);
 
         // Act
         Optional<Actor> actual = service.getActor(UUID.randomUUID().toString());

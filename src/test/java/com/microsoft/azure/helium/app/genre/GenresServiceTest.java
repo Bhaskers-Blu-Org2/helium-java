@@ -37,7 +37,7 @@ public class GenresServiceTest {
         when(repository.findAll()).thenReturn(genres);
 
         // Act
-        List<String> genresStr = service.getAllGenres();
+        List<Genre> genresStr = service.getAllGenres();
 
         // Assert
         assertNotNull(genresStr);

@@ -29,11 +29,11 @@ public class MoviesService {
             throw new NullPointerException("movieId cannot be empty or null");
         }
 
-        List<Movie> movies = repository.findByMovieId(movieId);
-        if (movies.isEmpty()) {
+        Movie movie = repository.findByMovieId(movieId);
+        if (movie == null) {
             return Optional.empty();
         } else {
-            return Optional.of(movies.get(0));
+            return Optional.of(movie);
         }
     }
 

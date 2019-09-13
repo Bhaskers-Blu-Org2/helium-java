@@ -29,11 +29,11 @@ public class ActorsService {
             throw new NullPointerException("actorId cannot be empty or null");
         }
 
-        List<Actor> actors = repository.findByActorId(actorId);
-        if (actors.isEmpty()) {
+        Actor actor = repository.findByActorId(actorId);
+        if (actor == null) {
             return Optional.empty();
         } else {
-            return Optional.of(actors.get(0));
+            return Optional.of(actor);
         }
     }
 }

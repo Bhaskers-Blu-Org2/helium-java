@@ -13,11 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,32 +34,16 @@ public class ActorsServiceTest {
     private ActorsService service;
 
     @Test
-    public void shouldReturnListOfAllActors() throws Exception {
-        // Arrange
-        List<Actor> expected = Arrays.asList(mock(Actor.class));
-        when(repository.findAll()).thenReturn(expected);
-
-        // Act
-        List<Actor> actual = service.getAllActors(Optional.empty());
-
-        // Assert
-        verify(repository, times(1)).findAll();
-        assertNotNull(actual);
-        assertThat(actual, hasSize(expected.size()));
-        assertThat(actual, containsInAnyOrder(expected.toArray()));
-    }
-
-    @Test
     public void shouldReturnListofActorsWhenQueryingValue() throws Exception {
         // Arrange
         List<Actor> expected = Arrays.asList(mock(Actor.class));
-        when(repository.findByTextSearchContaining(anyString())).thenReturn(expected);
+        when(repository.findByTextSearchContainingOrderByActorId(anyString())).thenReturn(expected);
 
         // Act
-        List<Actor> actual = service.getAllActors(Optional.of(UUID.randomUUID().toString()));
+        List<Actor> actual = service.getAllActors(Optional.of(UUID.randomUUID().toString()), null);
 
         // Assert
-        verify(repository, times(1)).findByTextSearchContaining(anyString());
+        verify(repository, times(1)).findByTextSearchContainingOrderByActorId(anyString());
         assertNotNull(actual);
         assertThat(actual, hasSize(expected.size()));
         assertThat(actual, containsInAnyOrder(expected.toArray()));
@@ -84,7 +64,7 @@ public class ActorsServiceTest {
     @Test
     public void shouldReturnEmptyOptionalWhenNotFindingActor() throws Exception {
         // Arrange
-        Actor expected = mock(Actor.class);
+        List<Actor> expected = new ArrayList<>();
         when(repository.findByActorId(anyString())).thenReturn(expected);
 
         // Act
@@ -93,13 +73,15 @@ public class ActorsServiceTest {
         // Assert
         verify(repository, times(1)).findByActorId(anyString());
         assertNotNull(actual);
+        assertFalse(actual.isPresent());
     }
 
     @Test
     public void shouldReturnActorInOptionalWhenFindingActor() throws Exception {
         // Arrange
         Actor expected = mock(Actor.class);
-        when(repository.findByActorId(anyString())).thenReturn(expected);
+        List<Actor> list = Arrays.asList(expected);
+        when(repository.findByActorId(anyString())).thenReturn(list);
 
         // Act
         Optional<Actor> actual = service.getActor(UUID.randomUUID().toString());
@@ -110,5 +92,4 @@ public class ActorsServiceTest {
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
     }
-
 }

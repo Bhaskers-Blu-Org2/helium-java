@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +40,9 @@ public class MoviesController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of movie objects") })
     public ResponseEntity<List<Movie>> getAllMovies(
             @ApiParam(value = "The movie title to filter by", required = false) @RequestParam("q") final Optional<String> query) {
-        List<Movie> movies = service.getAllMovies(query);
+
+        final Sort sort = new Sort(Sort.Direction.ASC, "movieId");
+        List<Movie> movies = service.getAllMovies(query, sort);
         return new ResponseEntity<>(movies, HttpStatus.OK);
     }
 
@@ -55,4 +60,6 @@ public class MoviesController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+
 }

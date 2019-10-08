@@ -1,30 +1,24 @@
 package com.microsoft.azure.helium.app.movie;
 
+import static com.microsoft.azure.helium.app.movie.MoviesUtils.generateMovies;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
+import com.microsoft.azure.helium.app.actor.Actor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Sort;
 
 /**
  * MoviesServiceTest
@@ -38,37 +32,24 @@ public class MoviesServiceTest {
     @InjectMocks
     private MoviesService service;
 
-    @Test
-    public void shouldReturnListOfAllMovies() throws Exception {
-        // Arrange
-        List<Movie> expected = Arrays.asList(mock(Movie.class));
-        when(repository.findAll()).thenReturn(expected);
 
-        // Act
-        List<Movie> actual = service.getAllMovies(Optional.empty());
-
-        // Assert
-        verify(repository, times(1)).findAll();
-        assertNotNull(actual);
-        assertThat(actual, hasSize(expected.size()));
-        assertThat(actual, containsInAnyOrder(expected.toArray()));
-    }
-
-    @Test
+   @Test
     public void shouldReturnListofMoviesWhenQueryingValue() throws Exception {
-        // Arrange
-        List<Movie> expected = Arrays.asList(mock(Movie.class));
-        when(repository.findByTextSearchContaining(anyString())).thenReturn(expected);
 
-        // Act
-        List<Movie> actual = service.getAllMovies(Optional.of(UUID.randomUUID().toString()));
+       // Arrange
+       List<Movie> expected = Arrays.asList(mock(Movie.class));
+       when(repository.findByTextSearchContaining(anyString())).thenReturn(expected);
 
-        // Assert
-        verify(repository, times(1)).findByTextSearchContaining(anyString());
-        assertNotNull(actual);
-        assertThat(actual, hasSize(expected.size()));
-        assertThat(actual, containsInAnyOrder(expected.toArray()));
-    }
+       // Act
+       List<Movie> actual = service.getAllMovies(Optional.of(UUID.randomUUID().toString()), null);
+
+       // Assert
+       verify(repository, times(1)).findByTextSearchContaining(anyString());
+       assertNotNull(actual);
+       assertThat(actual, hasSize(expected.size()));
+       assertThat(actual, containsInAnyOrder(expected.toArray()));
+   }
+
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenGettingMovieWithNullMovieId() {
@@ -77,7 +58,7 @@ public class MoviesServiceTest {
         service.getMovie(movieId);
     }
 
-    @Test(expected = NullPointerException.class)
+   @Test(expected = NullPointerException.class)
     public void shouldThrowWhenGettingMovieWithEmptyMovieId() {
         String movieId = "";
 
@@ -87,7 +68,7 @@ public class MoviesServiceTest {
     @Test
     public void shouldReturnEmptyOptionalWhenNotFindingMovie() throws Exception {
         // Arrange
-        Movie expected = mock(Movie.class);
+        List<Movie> expected = new ArrayList<>();
         when(repository.findByMovieId(anyString())).thenReturn(expected);
 
         // Act
@@ -96,13 +77,15 @@ public class MoviesServiceTest {
         // Assert
         verify(repository, times(1)).findByMovieId(anyString());
         assertNotNull(actual);
+        assertFalse(actual.isPresent());
     }
 
     @Test
     public void shouldReturnMovieInOptionalWhenFindingMovie() throws Exception {
         // Arrange
         Movie expected = mock(Movie.class);
-        when(repository.findByMovieId(anyString())).thenReturn(expected);
+        List<Movie> list = Arrays.asList(expected);
+        when(repository.findByMovieId(anyString())).thenReturn(list);
 
         // Act
         Optional<Movie> actual = service.getMovie(UUID.randomUUID().toString());

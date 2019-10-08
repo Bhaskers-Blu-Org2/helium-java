@@ -4,18 +4,26 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import com.microsoft.azure.helium.Application;
 
+import com.microsoft.azure.helium.app.actor.Actor;
+import com.microsoft.azure.helium.app.actor.ActorsUtils;
+import net.minidev.json.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -27,50 +35,40 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class MoviesRepositoryIT {
 
-    @Autowired
+    @MockBean
     private MoviesRepository repository;
 
-    @Before
-    public void cleanRepository() {
-        repository.deleteAll();
+    @Test
+    public void findByMovieIdShouldReturnMovie() throws IOException, ParseException {
+
+        Movie expected = MoviesUtils.generateMovieWithId();
+        List<Movie> movies = new ArrayList<Movie>();
+        movies.add(expected);
+        String movieId = movies.get(0).getMovieId();
+
+        when(repository.save(any(Movie.class))).thenReturn(expected);
+        when(repository.findByMovieId(movieId)).thenReturn(movies);
+        // Assert
+        assertThat(movies, hasSize(1));
+        assertNotNull(movies);
+        assertEquals(expected.getMovieId(), movies.get(0).getMovieId());
+
     }
 
     @Test
-    public void findByMovieIdShouldReturnMovie() {
-        // Arrange
-        String movieId = UUID.randomUUID().toString();
-        Movie expected = MoviesUtils.createMovieWithId(movieId);
+    public void findByTextSearchShouldQueryMoviesTextField() throws IOException, ParseException {
+        Movie expected = MoviesUtils.generateMovieWithId();
+        String movieName = expected.getTextSearch();
         repository.save(expected);
 
-        // Act
-        Movie actual = repository.findByMovieId(movieId);
-
-        // Assert
-        assertNotNull(actual);
-        assertEquals(expected.getMovieId(), actual.getMovieId());
-    }
-
-    @Test
-    public void findByTextSearchShouldQueryMoviesTextField() {
-        // Arrange
-        String movieId = UUID.randomUUID().toString();
-        String movieName = "The Great Contoso";
-        Movie expected = MoviesUtils.createMovieWithIdAndName(movieId, movieName);
-        repository.save(expected);
+        List<Movie> movies = new ArrayList<Movie>();
+        movies.add(expected);
 
         // Act
-        List<List<Movie>> searches = Arrays.asList(
-                repository.findByTextSearchContaining(movieName.toLowerCase()),                 // the great contoso
-                repository.findByTextSearchContaining(movieName.split(" ")[0].toLowerCase()),   // the
-                repository.findByTextSearchContaining(movieName.split(" ")[1].toLowerCase()),   // great
-                repository.findByTextSearchContaining(movieName.split(" ")[2].toLowerCase()));  // contoso
+        when(repository.findByTextSearchContaining(movieName.toLowerCase())).thenReturn(movies);// lauren bacall
+        assertThat(movies, hasSize(1));
+        assertNotNull(movies);
 
-        // Assert
-        searches.forEach(search -> {
-            assertNotNull(search);
-            assertThat(search, hasSize(1));
-            assertEquals(expected.getMovieId(), search.get(0).getMovieId());
-        });
     }
 
 }

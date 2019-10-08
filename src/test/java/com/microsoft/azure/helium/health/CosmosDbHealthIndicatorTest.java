@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 
+import com.microsoft.azure.helium.app.movie.Movie;
 import com.microsoft.azure.helium.utils.IntegrationTestsUtils;
 
 import org.junit.Test;
@@ -15,6 +16,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.Health.Builder;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * CosmosDbHealthIndicatorTest
@@ -29,7 +35,7 @@ public class CosmosDbHealthIndicatorTest {
     public void healthCheckIndicatorShouldReturnUp() throws Exception {
         // Arrange
         Builder builder = new Builder();
-        Mockito.doReturn(getRandomHttpSuccessCode()).when(indicator).getStatusCode(anyString());
+        Mockito.doReturn(getSuccessResponse()).when(indicator).getStatusCode(anyString());
 
         // Act
         indicator.doHealthCheck(builder);
@@ -44,7 +50,7 @@ public class CosmosDbHealthIndicatorTest {
     public void healthCheckIndicatorShouldReturnDown() throws Exception {
         // Arrange
         Builder builder = new Builder();
-        Mockito.doReturn(getRandomHttpErrorCode()).when(indicator).getStatusCode(anyString());
+        Mockito.doReturn(getFailureResponse()).when(indicator).getStatusCode(anyString());
 
         // Act
         indicator.doHealthCheck(builder);
@@ -55,11 +61,21 @@ public class CosmosDbHealthIndicatorTest {
         assertThat(health.getStatus(), is(Status.DOWN));
     }
 
-    private int getRandomHttpSuccessCode(){
-        return IntegrationTestsUtils.getRandomBetween(200, 204);
+    private HashMap<String, Long> getSuccessResponse(){
+        Long statusCode = (long) (int) IntegrationTestsUtils.getRandomBetween(200, 204);
+        HashMap<String, Long> resultDetails = new HashMap<>();
+        resultDetails.put("Status", statusCode);
+        resultDetails.put("Actors", 531L);
+        resultDetails.put("Movies", 100L);
+        resultDetails.put("Genres", 19L);
+        return resultDetails;
     }
 
-    private int getRandomHttpErrorCode(){
-        return IntegrationTestsUtils.getRandomBetween(400, 600);
+    private HashMap<String, Long> getFailureResponse(){
+        Long statusCode = (long) (int) IntegrationTestsUtils.getRandomBetween(400, 600);
+        HashMap<String, Long> resultDetails = new HashMap<>();
+        resultDetails.put("Status", statusCode);
+        return resultDetails;
     }
+
 }

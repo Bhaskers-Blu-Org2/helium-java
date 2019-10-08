@@ -58,6 +58,13 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.microsoft.azure/azure-cosmosdb -->
+    <dependency>
+      <groupId>com.microsoft.azure</groupId>
+      <artifactId>azure-cosmosdb</artifactId>
+      <version>2.6.1</version>
+    </dependency>
+
     <dependency>
       <groupId>com.microsoft.azure</groupId>
       <artifactId>spring-data-cosmosdb</artifactId>

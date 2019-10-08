@@ -29,8 +29,8 @@ public class GenresController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ApiOperation(value = "Get all genres", notes = "Retrieve and return all genres")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of genres objects") })
-    public ResponseEntity<List<Genre>> getAllGenres() {
-        List<Genre> genres = service.getAllGenres();
+    public ResponseEntity<List<String>> getAllGenres() {
+        List<String> genres = service.getAllGenres();
         return new ResponseEntity<>(genres, HttpStatus.OK);
     }
 }

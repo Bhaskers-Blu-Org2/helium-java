@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ActorsRepository extends DocumentDbRepository<Actor, String> {
-     Actor findByActorId(String actorId);
-     List<Actor> findByTextSearchContaining(String actorName);
+     List<Actor> findByActorId(String actorId);
+     List<Actor> findByTextSearchContainingOrderByActorId(String actorName);
 }

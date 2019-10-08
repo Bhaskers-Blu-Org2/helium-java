@@ -2,6 +2,7 @@ package com.microsoft.azure.helium.app.movie;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.microsoft.azure.helium.app.Constants;
 import com.microsoft.azure.spring.data.cosmosdb.core.mapping.Document;
 
@@ -11,6 +12,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import com.microsoft.azure.helium.app.actor.Actor;
+import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.core.annotation.Order;
+import org.springframework.data.annotation.Id;
 
 /**
  * Movie
@@ -19,20 +23,26 @@ import com.microsoft.azure.helium.app.actor.Actor;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Document(collection = Constants.DEFAULT_MOVIE_COLLECTION_NAME)
-public class Movie {
 
+@JsonPropertyOrder({"id","movieId", "partitionKey",  "type", "title", "textSearch", "year", "runtime", "rating", "votes", "totalScore", "genres", "roles" })
+public class Movie  extends  MovieBase{
+
+  @JsonIgnore
+  @Id
   private String id;
-  private String movieId;
-  private String textSearch;
-  private String title;
-  private String type;
-  @PartitionKey
-  private String key;
-  private int year;
-  private int rating;
-  private int votes;
-  private List<String> genres;
-  private List<Actor> roles;
 
+  @PartitionKey
+  private String partitionKey;
+
+  private double rating;
+  private long votes;
+  private long totalScore;
+  private String textSearch;
+  private List<Role> roles;
+
+
+    public Movie() {
+
+    }
 
 }

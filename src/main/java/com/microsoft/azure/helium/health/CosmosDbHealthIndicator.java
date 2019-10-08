@@ -1,17 +1,23 @@
 package com.microsoft.azure.helium.health;
 
-import com.microsoft.azure.documentdb.Database;
-import com.microsoft.azure.documentdb.DocumentClient;
-import com.microsoft.azure.documentdb.DocumentClientException;
-import com.microsoft.azure.documentdb.RequestOptions;
-import com.microsoft.azure.documentdb.ResourceResponse;
+import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
 
+import com.microsoft.azure.documentdb.*;
+import com.microsoft.azure.helium.app.actor.ActorsRepository;
+import com.microsoft.azure.helium.app.genre.GenresRepository;
+import com.microsoft.azure.helium.app.movie.MoviesController;
+import com.microsoft.azure.helium.app.movie.MoviesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import rx.Observable;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * CosmosDbHealthIndicator
@@ -21,6 +27,7 @@ public class CosmosDbHealthIndicator extends AbstractHealthIndicator {
 
 	@Autowired
 	private DocumentClient documentClient;
+
 
 	private String dbName;
 
@@ -32,9 +39,11 @@ public class CosmosDbHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Builder builder) throws DocumentClientException {
 		try {
-			int statusCode = getStatusCode(dbName);
-			if (HttpStatus.valueOf(statusCode).is2xxSuccessful()) {
-				builder.up().build();
+			HashMap<String, Long> result = getStatusCode(dbName);
+			Long statusCode = result.get("Status");
+			result.forEach((key,value) -> System.out.println(key + " = " + value));
+			if (HttpStatus.valueOf((int) (long) statusCode).is2xxSuccessful()) {
+				builder.up().withDetails(result);
 			} else {
 				builder.down().withDetail("Error Code", statusCode).build();
 			}
@@ -43,9 +52,32 @@ public class CosmosDbHealthIndicator extends AbstractHealthIndicator {
 		}
 	}
 
-	protected int getStatusCode(String dbName) throws DocumentClientException {
+	protected HashMap<String, Long > getStatusCode(String dbName) throws DocumentClientException {
+
 		ResourceResponse<Database> response = this.documentClient.readDatabase("dbs/" + dbName, new RequestOptions());
-		return response.getStatusCode();
+		HashMap<String, Long> resultDetails = new HashMap<>();
+
+		FeedOptions queryOptions = new FeedOptions();
+		queryOptions.setPageSize(-1);
+		queryOptions.setEnableCrossPartitionQuery(true);
+
+		resultDetails.put("Status", Long.valueOf(response.getStatusCode()));
+		String collectionMoviesLink = String.format("/dbs/%s/colls/%s", "imdb","movies");
+		List<Document> moviesResult =  documentClient.queryDocuments(collectionMoviesLink, "SELECT VALUE COUNT(1) FROM c", queryOptions).getQueryIterable().toList();
+		Long movieCount = (Long) moviesResult.get(0).get("_aggregate");
+		resultDetails.put("Movies", movieCount);
+
+		String collectionActorsLink = String.format("/dbs/%s/colls/%s", "imdb","actors");
+		List<Document> actorsResult =  documentClient.queryDocuments(collectionActorsLink, "SELECT VALUE COUNT(1) FROM c", queryOptions).getQueryIterable().toList();
+		Long actorCount = (Long) actorsResult.get(0).get("_aggregate");
+		resultDetails.put("Actors", actorCount);
+
+		String collectionGenresLink = String.format("/dbs/%s/colls/%s", "imdb","genres");
+		List<Document> genresResult =  documentClient.queryDocuments(collectionGenresLink, "SELECT VALUE COUNT(1) FROM c", queryOptions).getQueryIterable().toList();
+		Long genreCount = (Long) genresResult.get(0).get("_aggregate");
+		resultDetails.put("Genres", genreCount);
+
+		return resultDetails;
 	}
 
 }

@@ -20,8 +20,9 @@ public class GenresService {
     @Autowired
     private GenresRepository repository;
 
-    public List<Genre> getAllGenres() {
-            return (List<Genre>) repository.findAll();
+    public List<String> getAllGenres() {
+        Iterable<Genre> genres = repository.findAll();
+        Stream<Genre> genresStream = StreamSupport.stream(genres.spliterator(), false);
+        return genresStream.map(g -> g.getGenre()).collect(Collectors.toList());
     }
-
 }

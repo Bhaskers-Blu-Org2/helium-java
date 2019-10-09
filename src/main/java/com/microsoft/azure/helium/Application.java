@@ -1,17 +1,13 @@
 package com.microsoft.azure.helium;
 
-import com.microsoft.azure.AzureEnvironment;
-import com.microsoft.azure.credentials.AppServiceMSICredentials;
-import com.microsoft.azure.helium.app.actor.ActorsController;
-import com.microsoft.azure.helium.app.movie.MoviesController;
-import com.microsoft.azure.helium.app.movie.MoviesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Properties;
@@ -20,6 +16,10 @@ import java.util.Properties;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
+	private static final Logger logger = LoggerFactory.getLogger(Application.class);
+
+	@Autowired
+	Environment environment;
 
 	@Value("${azure.keyvault.uri}")
 	private String keyUri;
@@ -29,25 +29,10 @@ public class Application implements CommandLineRunner {
 	}
 
 	public void run(String... varl) throws Exception {
-		System.out.println("keyUri: " + keyUri);
+		logger.info("keyUri: " + keyUri);
+		logger.info("kvName: " + environment.getProperty("KeyVaultName"));
 
-		/*String kvName = getKeyVaultUrl(keyUri);
-		Properties properties = new Properties();
-		properties.setProperty("azure.keyvault.uri", kvName);
-		System.out.println("updated keyUri: " + properties.getProperty("azure.keyvault.uri"));*/
 	}
-	public static String getKeyVaultUrl(String keyUri)
-	{
-		String kvName = "";
-		// command line arg overrides environment variable
-		if (keyUri.length() > 0 && ! keyUri.startsWith("-")){
-			kvName = keyUri.trim();
-		}
-		// build the URL
-		if (!kvName.isEmpty() && ! kvName.startsWith("https://")){
-			return "https://" + kvName + ".vault.azure.net/";
-		}
-		return kvName;
-	}
+
 
 }

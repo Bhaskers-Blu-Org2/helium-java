@@ -64,17 +64,17 @@ public class CosmosDbHealthIndicatorTest {
     private HashMap<String, Long> getSuccessResponse(){
         Long statusCode = (long) (int) IntegrationTestsUtils.getRandomBetween(200, 204);
         HashMap<String, Long> resultDetails = new HashMap<>();
-        resultDetails.put("Status", statusCode);
-        resultDetails.put("Actors", 531L);
-        resultDetails.put("Movies", 100L);
-        resultDetails.put("Genres", 19L);
+        resultDetails.put("status", statusCode);
+        resultDetails.put("actors", 531L);
+        resultDetails.put("movies", 100L);
+        resultDetails.put("genres", 19L);
         return resultDetails;
     }
 
     private HashMap<String, Long> getFailureResponse(){
         Long statusCode = (long) (int) IntegrationTestsUtils.getRandomBetween(400, 600);
         HashMap<String, Long> resultDetails = new HashMap<>();
-        resultDetails.put("Status", statusCode);
+        resultDetails.put("status", statusCode);
         return resultDetails;
     }
 

@@ -2,6 +2,7 @@ package com.microsoft.azure.helium.config;
 
 import java.util.Collections;
 
+import com.google.common.base.Predicates;
 import io.swagger.annotations.Api;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,36 +23,21 @@ import static springfox.documentation.builders.PathSelectors.regex;
 @EnableSwagger2
 public class SwaggerConfig {     
 
- /*    @Bean
-   public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-          .useDefaultResponseMessages(false)
-          .select()
-            .apis(RequestHandlerSelectors.basePackage("com.microsoft.azure.helium"))
-            .paths(regex("/api/.*"))
-            .build()
-          .apiInfo(apiInfo());                 
-    }
-*/
-
     @Bean
     public Docket documentation() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.any())
-                .paths(regex("/api/.*"))
+                .paths(PathSelectors.any())
+                .paths(Predicates.not(PathSelectors.regex("/error.*")))
                 .build()
-                .pathMapping("/")
                 .apiInfo(apiInfo());
     }
 
 
-
-
-
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Helium")
+                .title("Helium(Java)")
                 .description("Java app for bootstrapping your next Web Apps for Containers service using Key Vault and Managed Identities")
                 .version("1.0-SNAPSHOT")
                 .build();

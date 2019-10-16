@@ -124,8 +124,7 @@ export He_Cosmos_DB=imdb
 export He_Cosmos_Col=movies
 
 # since spring-Boot doesnt support single collection with different document types, we will be creating separate collections for each document types
-# There is a CSE feedback filed for spring patch on this 
-https://csefy19.visualstudio.com/CSE%20Feedback/_workitems/edit/264307/ - spring to support different document types in the same collection – spring patch needed
+# There is a CSE feedback filed  issue on spring patch for fixing this issue
 
 export He_Cosmos_MoviesCol=movies
 export He_Cosmos_ActorsCol=actors
@@ -153,13 +152,9 @@ export He_Cosmos_RO_Key=$(az cosmosdb keys list -n $He_Name -g $He_Cosmos_RG --q
 # get readwrite key (used by the imdb import)
 export He_Cosmos_RW_Key=$(az cosmosdb keys list -n $He_Name -g $He_Cosmos_RG --query primaryMasterKey -o tsv)
 
-# run the IMDb Import
-docker run -it --rm fourco/imdb-import $He_Name $He_Cosmos_RW_Key $He_Cosmos_DB He_Cosmos_MoviesCol
-docker run -it --rm fourco/imdb-import $He_Name $He_Cosmos_RW_Key $He_Cosmos_DB He_Cosmos_ActorsCol
-docker run -it --rm fourco/imdb-import $He_Name $He_Cosmos_RW_Key $He_Cosmos_DB He_Cosmos_GenresCol
+# manually import data from movies.json, actors.json, genres.json into movies, actors, genres collection from the source below
+https://github.com/4-co/imdb/tree/master/data
 
-
-# Optional: Run ./saveenv.sh to save latest variables
 
 ```
 
@@ -195,25 +190,11 @@ export dev_Object_Id=$(az ad user show --id {developer email address} --query ob
 # grant Key Vault access to each developer (optional)
 az keyvault set-policy -n $He_Name --secret-permissions get list --key-permissions get list --object-id $dev_Object_Id
 
-```
-
-Run the unit tests
-
-- The unit tests run as part of the Docker build process. You can also run the unit tests manually.
-
-```bash
-
-cd src/unit-tests
-
-dotnet test
-
-```
 
 Run the application locally
 
 # IMP: security hole in keyvault MSI
-KeyVault MSI does not work locally , there is a CSE feedback filed on the same
-https://csefy19.visualstudio.com/CSE%20Feedback/_workitems/edit/262008 - Fail to get Key Vault access through MSI on local development environment
+KeyVault MSI does not work locally , there is a CSE feedback issue filed on the same
 
 To get KeyVault working locally we would need to go thru clear text route, for that update the clientid and clientkey by uncommenting these lines in application.properties and populating clientid and clientkey 
 #azure.keyvault.uri=https://{kvurl}.vault.azure.net/
@@ -222,10 +203,12 @@ To get KeyVault working locally we would need to go thru clear text route, for t
 
 ```bash
 
-cd ../app
-
-# run in the background
+# run locally with unit tests
 mvn clean package
+
+# run locally without unit tests
+mvn clean package -DskipTests
+
 mvn clean spring-boot:run
 
 # test the application
@@ -251,7 +234,7 @@ az acr login -n $He_Name
 
 # Build the container with az acr build
 ### Make sure you are in the src directory
-az acr build -r $He_Name -t $He_Name.azurecr.io/helium-csharp .
+az acr build -r $He_Name -t $He_Name.azurecr.io/helium-java .
 
 ```
 
@@ -322,7 +305,7 @@ az keyvault set-policy -n $He_Name --secret-permissions get list --key-permissio
 export He_CICD_URL=$(az webapp deployment container config -n $He_Name -g $He_App_RG --enable-cd true --query CI_CD_URL -o tsv)
 
 # add the webhook
-az acr webhook create -r $He_Name -n ${He_Name} --actions push --uri $He_CICD_URL --scope helium-csharp:latest
+az acr webhook create -r $He_Name -n ${He_Name} --actions push --uri $He_CICD_URL --scope helium-java:latest
 
 # set the Key Vault name app setting (environment variable)
 az webapp config appsettings set --settings KeyVaultName=$He_Name -g $He_App_RG -n $He_Name
@@ -340,7 +323,7 @@ export He_AcrPassword=$(az keyvault secret show --vault-name $He_Name --name "Ac
 # configure the Web App to use Container Registry
 # get Service Principal Id and Key from Key Vault
 az webapp config container set -n $He_Name -g $He_App_RG \
--i ${He_Name}.azurecr.io/helium-csharp \
+-i ${He_Name}.azurecr.io/helium-java \
 -r https://${He_Name}.azurecr.io \
 -u "@Microsoft.KeyVault(SecretUri=${He_AcrUserId})" \
 -p "@Microsoft.KeyVault(SecretUri=${He_AcrPassword})"

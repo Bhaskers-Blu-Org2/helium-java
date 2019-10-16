@@ -21,5 +21,4 @@ RUN adduser -S appuser
 USER appuser
 COPY --from=dependencies /app/target/helium-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
-#ENTRYPOINT ["java","Dspring-boot.run.arguments=--azure.keyvault.uri=https://gelato.vault.azure.net/","-jar","./app.jar"]
 CMD ["java", "-jar", "./app.jar"]

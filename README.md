@@ -98,17 +98,6 @@ az group create -n $He_Cosmos_RG -l $He_Location
 
 Save your environment variables for ease of reuse and picking up where you left off.
 
-```bash
-
-# run the saveenv.sh script at any time to save He_* variables to ~/${He_Name}.env
-# make sure you are in the root of the repo
-./saveenv.sh
-
-# at any point if your terminal environment gets cleared, you can source the file
-# you only need to remember the name of the env file (or set the $He_Name variable again)
-source ~/{yoursameuniquename}.env
-
-```
 
 Create and load sample data into CosmosDB
 
@@ -152,9 +141,8 @@ export He_Cosmos_RO_Key=$(az cosmosdb keys list -n $He_Name -g $He_Cosmos_RG --q
 # get readwrite key (used by the imdb import)
 export He_Cosmos_RW_Key=$(az cosmosdb keys list -n $He_Name -g $He_Cosmos_RG --query primaryMasterKey -o tsv)
 
-# manually import data from movies.json, actors.json, genres.json into movies, actors, genres collection from the source below
-https://github.com/4-co/imdb/tree/master/data
-
+# import data into movies, actors, genres collection
+docker run -it --rm bartr/imdb-import $Imdb_Name $Imdb_Key imdb actors genres movies
 
 ```
 
@@ -253,7 +241,6 @@ export He_AppInsights_Key=$(az monitor app-insights component create -g $He_App_
 # add App Insights Key to Key Vault
 az keyvault secret set -o table --vault-name $He_Name --name "AppInsightsKey" --value $He_AppInsights_Key
 
-# Optional: Run ./saveenv.sh to save latest variables
 
 ```
 
@@ -277,7 +264,6 @@ az role assignment create --assignee $He_SP_ID --scope $He_ACR_Id --role acrpull
 az keyvault secret set -o table --vault-name $He_Name --name "AcrUserId" --value $He_SP_ID
 az keyvault secret set -o table --vault-name $He_Name --name "AcrPassword" --value $He_SP_PWD
 
-# Optional: Run ./saveenv.sh to save latest variables
 
 ```
 

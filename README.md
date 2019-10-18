@@ -142,7 +142,7 @@ export He_Cosmos_RO_Key=$(az cosmosdb keys list -n $He_Name -g $He_Cosmos_RG --q
 export He_Cosmos_RW_Key=$(az cosmosdb keys list -n $He_Name -g $He_Cosmos_RG --query primaryMasterKey -o tsv)
 
 # import data into movies, actors, genres collection
-docker run -it --rm bartr/imdb-import $Imdb_Name $Imdb_Key imdb actors genres movies
+docker run -it --rm fourco/imdb-import $Imdb_Name $Imdb_Key imdb actors genres movies
 
 ```
 

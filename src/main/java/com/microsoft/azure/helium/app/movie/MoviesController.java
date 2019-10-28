@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +40,9 @@ public class MoviesController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of movie objects") })
     public ResponseEntity<List<Movie>> getAllMovies(
             @ApiParam(value = "The movie title to filter by", required = false) @RequestParam("q") final Optional<String> query) {
-        List<Movie> movies = service.getAllMovies(query);
+
+        final Sort sort = new Sort(Sort.Direction.ASC, "movieId");
+        List<Movie> movies = service.getAllMovies(query, sort);
         return new ResponseEntity<>(movies, HttpStatus.OK);
     }
 
@@ -56,38 +61,5 @@ public class MoviesController {
         }
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create movie", notes = "Creates an movie")
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "The created movie") })
-    public ResponseEntity<Movie> createMovie(@RequestBody final Movie movie) {
-        Movie savedMovie = service.createMovie(movie);
-        return new ResponseEntity<>(savedMovie, HttpStatus.OK);
-    }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update movie", notes = "Update a movie")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "The updated movie") })
-    public ResponseEntity<Movie> updateMovie(
-            @ApiParam(value = "The ID of the actor to patch", required = true) @PathVariable("id") final String movieId, @RequestBody final Movie movie) {
-        Movie savedMovie = service.updateMovie(movieId, movie);
-        return new ResponseEntity<>(savedMovie, HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "Delete movie", notes = "Delete a movie")
-    @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "The resource was deleted successfully"),
-            @ApiResponse(code = 404, message = "A movie with that ID does not exist") })
-    public ResponseEntity<Void> deleteMovie(
-            @ApiParam(value = "The ID of the actor to delete", required = true) @PathVariable("id") final String movieId) {
-        Optional<Movie> movie = service.getMovie(movieId);
-        if (movie.isPresent()) {
-            service.deleteMovie(movieId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 }

@@ -13,11 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,32 +34,16 @@ public class ActorsServiceTest {
     private ActorsService service;
 
     @Test
-    public void shouldReturnListOfAllActors() throws Exception {
-        // Arrange
-        List<Actor> expected = Arrays.asList(mock(Actor.class));
-        when(repository.findAll()).thenReturn(expected);
-
-        // Act
-        List<Actor> actual = service.getAllActors(Optional.empty());
-
-        // Assert
-        verify(repository, times(1)).findAll();
-        assertNotNull(actual);
-        assertThat(actual, hasSize(expected.size()));
-        assertThat(actual, containsInAnyOrder(expected.toArray()));
-    }
-
-    @Test
     public void shouldReturnListofActorsWhenQueryingValue() throws Exception {
         // Arrange
         List<Actor> expected = Arrays.asList(mock(Actor.class));
-        when(repository.findByTextSearchContaining(anyString())).thenReturn(expected);
+        when(repository.findByTextSearchContainingOrderByActorId(anyString())).thenReturn(expected);
 
         // Act
-        List<Actor> actual = service.getAllActors(Optional.of(UUID.randomUUID().toString()));
+        List<Actor> actual = service.getAllActors(Optional.of(UUID.randomUUID().toString()), null);
 
         // Assert
-        verify(repository, times(1)).findByTextSearchContaining(anyString());
+        verify(repository, times(1)).findByTextSearchContainingOrderByActorId(anyString());
         assertNotNull(actual);
         assertThat(actual, hasSize(expected.size()));
         assertThat(actual, containsInAnyOrder(expected.toArray()));
@@ -111,26 +91,5 @@ public class ActorsServiceTest {
         assertNotNull(actual);
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCreatingActorWithNull() {
-        Actor actor = null;
-        service.createActor(actor);
-    }
-
-    @Test
-    public void shouldReturnActorWhenCreatingActor() throws Exception {
-        // Arrange
-        Actor expected = mock(Actor.class);
-        when(repository.save(expected)).thenReturn(expected);
-
-        // Act
-        Actor actual = service.createActor(expected);
-
-        // Assert
-        verify(repository, times(1)).save(expected);
-        assertNotNull(actual);
-        assertEquals(expected, actual);
     }
 }

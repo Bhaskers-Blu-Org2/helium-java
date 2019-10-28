@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -16,11 +17,11 @@ public class ActorsService {
     @Autowired
     private ActorsRepository repository;
 
-    public List<Actor> getAllActors(Optional<String> query) {
+    public List<Actor> getAllActors(Optional<String> query, Sort sort) {
         if (query.isPresent() && !StringUtils.isEmpty(query.get())) {
-            return repository.findByTextSearchContaining(query.get().toLowerCase());
+            return repository.findByTextSearchContainingOrderByActorId(query.get().toLowerCase());
         } else {
-            return (List<Actor>) repository.findAll();
+            return (List<Actor>) repository.findAll(sort);
         }
     }
 
@@ -35,13 +36,5 @@ public class ActorsService {
         } else {
             return Optional.of(actors.get(0));
         }
-    }
-
-    public Actor createActor(Actor actor) {
-        if (actor.equals(null)) {
-            throw new NullPointerException("actor cannot be null");
-        }
-
-        return repository.save(actor);
     }
 }

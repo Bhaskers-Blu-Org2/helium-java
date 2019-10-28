@@ -32,8 +32,26 @@ public class GenresServiceTest {
     @Test
     public void genresServiceShouldReturnListofAllGenres() throws Exception {
         // Arrange
-        List<String> expected = Arrays.asList("Animation", "Comedy", "Sci-Fi");
-        Iterable<Genre> genres = GenresUtils.getGenresFromStrings(expected);
+        List<String> expected = Arrays.asList("Action",
+                "Adventure",
+                "Animation",
+                "Biography",
+                "Comedy",
+                "Crime",
+                "Documentary",
+                "Drama",
+                "Family",
+                "Fantasy",
+                "History",
+                "Music",
+                "Musical",
+                "Mystery",
+                "Romance",
+                "Sci-Fi",
+                "Sport",
+                "Thriller",
+                "War");
+        Iterable<Genre> genres = GenresUtils.generateGenres();
         when(repository.findAll()).thenReturn(genres);
 
         // Act
@@ -44,4 +62,5 @@ public class GenresServiceTest {
         assertThat(genresStr, hasSize(expected.size()));
         assertThat(genresStr, containsInAnyOrder(expected.toArray()));
     }
+
 }

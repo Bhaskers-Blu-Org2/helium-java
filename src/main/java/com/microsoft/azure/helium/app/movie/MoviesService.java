@@ -1,11 +1,14 @@
 package com.microsoft.azure.helium.app.movie;
 
+import com.google.gson.Gson;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 /**
  * MoviesService
@@ -14,22 +17,28 @@ import org.springframework.util.StringUtils;
 public class MoviesService {
 
     @Autowired
-    private MoviesRepository repository;
+    MoviesRepository repository;
 
-    public List<Movie> getAllMovies(Optional<String> query) {
+    private static Gson gson = new Gson();
+
+
+    public List<Movie> getAllMovies(Optional<String> query, Sort sort) {
         if (query.isPresent() && !StringUtils.isEmpty(query.get())) {
             return repository.findByTextSearchContaining(query.get().toLowerCase());
         } else {
-            return (List<Movie>) repository.findAll();
+            return (List<Movie>) repository.findAll(sort);
         }
     }
 
+    /*This API uses QueryDocument with PartitionKey */
     public Optional<Movie> getMovie(String movieId) {
         if (StringUtils.isEmpty(movieId)) {
             throw new NullPointerException("movieId cannot be empty or null");
         }
-
+        //queries by partitionid - partitionkey is the field annotated with @partitionkey
         List<Movie> movies = repository.findByMovieId(movieId);
+        //queries without partitionkey
+        //repository.findById(movieId);
         if (movies.isEmpty()) {
             return Optional.empty();
         } else {
@@ -37,35 +46,7 @@ public class MoviesService {
         }
     }
 
-    public Movie createMovie(Movie movie) {
-        if (movie.equals(null)) {
-            throw new NullPointerException("movie cannot be null");
-        }
-
-        return repository.save(movie);
-    }
-
-    public Movie updateMovie(String movieId, Movie movie) {
-        if (StringUtils.isEmpty(movieId)) {
-            throw new NullPointerException("movieId cannot be empty or null");
-        }
-
-        if (movie.equals(null)) {
-            throw new NullPointerException("movie cannot be null");
-        }
-
-        if (repository.existsById(movieId)) {
-            return repository.save(movie);
-        } else {
-            throw new RuntimeException(String.format("%s does not exist", movieId));
-        }
-    }
-
-    public void deleteMovie(String movieId) {
-        if (StringUtils.isEmpty(movieId)) {
-            throw new NullPointerException("movieId cannot be empty or null");
-        }
-
-        repository.deleteById(movieId);
-    }
 }
+
+
+

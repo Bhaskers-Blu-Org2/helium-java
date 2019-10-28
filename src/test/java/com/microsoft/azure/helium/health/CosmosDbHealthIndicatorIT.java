@@ -30,7 +30,8 @@ public class CosmosDbHealthIndicatorIT {
             .perform(get("/healthz"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status", is("UP")))
-            .andExpect(jsonPath("$.details.cosmosDb.status", is("UP")));
+            .andExpect(jsonPath("$.details.cosmosDb.status", is("UP")))
+            .andExpect(jsonPath("$.details.cosmosDb.details", is("\"Movies\":100,\"Actors\":531,\"Genres\":19}")));
 
         this.mockMvc
             .perform(get("/healthz/cosmosDb"))

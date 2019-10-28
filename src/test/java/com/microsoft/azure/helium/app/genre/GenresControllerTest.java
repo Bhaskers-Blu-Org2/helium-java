@@ -45,17 +45,17 @@ public class GenresControllerTest {
 
         // Act
         ResultActions action = this.mockMvc
-            .perform(get("/api/genres/"))
-            .andDo(print());
+                .perform(get("/api/genres/"))
+                .andDo(print());
 
         // Assert
         action
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json;charset=UTF-8"))
-            .andExpect(jsonPath("$", hasSize(3)))
-            .andExpect(jsonPath("$[0]", is("Animation")))
-            .andExpect(jsonPath("$[1]", is("Comedy")))
-            .andExpect(jsonPath("$[2]", is("Sci-Fi")));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0]", is("Animation")))
+                .andExpect(jsonPath("$[1]", is("Comedy")))
+                .andExpect(jsonPath("$[2]", is("Sci-Fi")));
     }
 
 }

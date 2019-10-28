@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,8 @@ public class ActorsController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of actor objects") })
     public ResponseEntity<List<Actor>> getAllActors(
             @ApiParam(value = "The actor name to filter by", required = false) @RequestParam("q") final Optional<String> query) {
-        List<Actor> actors = service.getAllActors(query);
+        final Sort sort = new Sort(Sort.Direction.ASC, "actorId");
+        List<Actor> actors = service.getAllActors(query,sort);
         return new ResponseEntity<>(actors, HttpStatus.OK);
     }
 
@@ -55,12 +57,4 @@ public class ActorsController {
         }
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create actor", notes = "Creates an actor")
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "The created actor") })
-    public ResponseEntity<Actor> createActor(@RequestBody final Actor actor) {
-        Actor savedActor = service.createActor(actor);
-        return new ResponseEntity<>(savedActor, HttpStatus.OK);
-    }
 }

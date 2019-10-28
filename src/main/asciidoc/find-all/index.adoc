@@ -1,0 +1,4 @@
+[[movies_find_all]]
+=== Find all movies
+
+include::success.adoc[]

@@ -1,18 +1,30 @@
 package com.microsoft.azure.helium.app.genre;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.parser.ParseException;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 /**
  * GenresUtils
  */
 public class GenresUtils {
 
-    public static List<Genre> getGenresFromStrings(List<String> genresStr){
-        Stream<String> genresStream = StreamSupport.stream(genresStr.spliterator(), false);
-        List<Genre> genres = genresStream.map(g -> new Genre(g.toLowerCase(), "0", "Genre", g)).collect(Collectors.toList());
-        return genres;
+
+    public static List<Genre> generateGenres() throws IOException, ParseException {
+        File file = readFile();
+        ObjectMapper mapper = new ObjectMapper();
+        List<Genre> mockGenres = Arrays.asList(mapper.readValue(file, Genre[].class));
+        return mockGenres;
     }
+
+
+    public static File readFile() throws IOException, ParseException{
+        File file = new File("src/test/java/com/microsoft/azure/helium/data/genres.json");
+        return file;
+
+    }
+
 }
